@@ -23,7 +23,7 @@ type Server struct {
 }
 
 type Options struct {
-   TargetHost string `long:"target" description:"Target host" default:"Unknown"`
+   TargetHost string `long:"target" description:"Target host" required:"true"`
 }
 
 func main() {
@@ -88,6 +88,10 @@ func (s Server) getHandler(w http.ResponseWriter, r *http.Request) {
 func (s Server) postHandler(w http.ResponseWriter, r *http.Request) {
     log.Printf("[INFO] postHandler")
 
+    s.handleRequest("POST", w, r)
+}
+
+func (s Server) handleRequest(typeRequest string, w http.ResponseWriter, r *http.Request) {
     uri := chi.URLParam(r, "*")
 
     log.Printf("[INFO] uri: %s", uri)
@@ -106,16 +110,14 @@ func (s Server) postHandler(w http.ResponseWriter, r *http.Request) {
     }
     client := &http.Client{Transport: tr}
 
-    req, err := http.NewRequest("POST", s.TargetHost+uri, responseBody)
+    req, err := http.NewRequest(typeRequest, s.TargetHost+uri, responseBody)
 
     for key, value := range r.Header {
         for _, v := range value {
             req.Header.Add(key, v)
         }
     }
-
-    req.Header.Set("Cookie", "name=jtrw-proxy")
-    req.Header.Set("X-Jtrw-Proxy", "1.0")
+    setSystemHeaders(req)
 
     if err != nil {
        log.Printf("%s",err)
@@ -125,7 +127,6 @@ func (s Server) postHandler(w http.ResponseWriter, r *http.Request) {
 
     defer resp.Body.Close()
 
-   // resp, err := client.Post(s.TargetHost+uri, contentType, responseBody)
     if err != nil {
        log.Printf("%s",err)
     }
@@ -138,6 +139,10 @@ func (s Server) postHandler(w http.ResponseWriter, r *http.Request) {
     }
 
    fmt.Fprintf(w, "%s", response)
+}
+
+func setSystemHeaders(req *http.Request) {
+    req.Header.Set("X-Jtrw-Proxy", "1.0")
 }
 
 
