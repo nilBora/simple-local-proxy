@@ -20,14 +20,17 @@ type Server struct {
 	WebRoot        string
 	Version        string
 	TargetHost     string
+	Host           string
+	Port           string
 }
 
 type Options struct {
-   TargetHost string `long:"target" description:"Target host" required:"true"`
+    TargetHost string `short:"t" long:"target" description:"Target host" required:"true"`
+    Host string `short:"h" long:"host" default:"127.0.0.1" description:"Host web server"`
+    Port string `short:"p" long:"port" default:"8080" description:"Port web server"`
 }
 
 func main() {
-
     var opts Options
     parser := flags.NewParser(&opts, flags.Default)
     _, err := parser.Parse()
@@ -40,6 +43,9 @@ func main() {
         WebRoot:   "/",
         Version:   "1.0",
         TargetHost: opts.TargetHost,
+        Host: opts.Host,
+        Port: opts.Port,
+
     }
 
     if err := srv.Run(); err != nil {
@@ -49,10 +55,10 @@ func main() {
 
 func (s Server) Run() error {
     log.Printf("[INFO] Activate rest server")
-    log.Printf("[INFO] Host: 127.0.0.1")
-    log.Printf("[INFO] Port: 8080")
+    log.Printf("[INFO] Host: %s", s.Host)
+    log.Printf("[INFO] Port: %s", s.Port)
 
-	if err := http.ListenAndServe(":8080", s.routes()); err != http.ErrServerClosed {
+	if err := http.ListenAndServe(s.Host+":"+s.Port, s.routes()); err != http.ErrServerClosed {
 		//return errors.Wrap(err, "server failed")
 		return errors.Wrap(err, "server failed")
 	}
