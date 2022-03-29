@@ -11,6 +11,7 @@ import (
    //"github.com/didip/tollbooth/v6"
    //"github.com/didip/tollbooth_chi"
    "github.com/go-chi/chi/v5"
+   "github.com/go-chi/chi/v5/middleware"
    "github.com/jessevdk/go-flags"
 )
 
@@ -67,16 +68,11 @@ func (s Server) Run() error {
 func (s Server) routes() chi.Router {
 	router := chi.NewRouter()
 
-// 	router.Use(middleware.RequestID, middleware.RealIP, um.Recoverer(log.Default()))
-// 	router.Use(middleware.Throttle(1000), middleware.Timeout(60*time.Second))
-// 	router.Use(um.AppInfo("secrets", "jtrw", s.Version), um.Ping, um.SizeLimit(64*1024))
-// 	router.Use(tollbooth_chi.LimitHandler(tollbooth.NewLimiter(10, nil)))
+    router.Use(middleware.Logger)
 
 	router.Route("/", func(r chi.Router) {
 	    r.Get("/*", s.getHandler)
 	    r.Post("/*", s.postHandler)
-		//r.Use(Logger(log.Default()))
-		//r.Get("/message/{key}/{pin}", s.getMessageCtrl)
 	})
 
 	return router
@@ -84,9 +80,8 @@ func (s Server) routes() chi.Router {
 
 func (s Server) getHandler(w http.ResponseWriter, r *http.Request) {
     log.Printf("[INFO] getHandler")
-    onlyData := r.URL.Query()
-    log.Printf("%s",onlyData)
-    //fmt.Fprintf(w, "%s", onlyData)
+
+    s.handleRequest("GET", w, r)
 }
 
 func (s Server) postHandler(w http.ResponseWriter, r *http.Request) {
@@ -114,7 +109,9 @@ func (s Server) handleRequest(typeRequest string, w http.ResponseWriter, r *http
     }
     client := &http.Client{Transport: tr}
 
-    req, err := http.NewRequest(typeRequest, s.TargetHost+uri, responseBody)
+    proxyUrl := s.TargetHost+uri+"?"+r.URL.RawQuery
+
+    req, err := http.NewRequest(typeRequest, proxyUrl, responseBody)
 
     for key, value := range r.Header {
         for _, v := range value {
