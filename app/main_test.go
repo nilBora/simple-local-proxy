@@ -8,10 +8,11 @@ import (
     "net/http"
     "fmt"
     "syscall"
+    "io/ioutil"
 )
 
 func Test_Main(t *testing.T) {
-    	os.Args = []string{"main", "--target=demo.proxy.com"}
+    	os.Args = []string{"main", "--target=https://casino-uc.casino.oxg.local"}
 
         done := make(chan struct{})
         go func() {
@@ -31,7 +32,9 @@ func Test_Main(t *testing.T) {
             <-finished
         }()
         port := 8081;
-        _, err := http.Get(fmt.Sprintf("http://127.0.0.1:%d/api/v1/ping", port))
-        require.NoError(t, err)
-        assert.Equal(t, "pong", "pong")
+        resp, _ := http.Get(fmt.Sprintf("http://127.0.0.1:%d/api/v1/ping", port))
+        response, _ := ioutil.ReadAll(resp.Body)
+        //fmt.Sprintf("Rsponse: %s", response)
+       // require.NoError(t, err)
+        assert.Equal(t, "pong", string(response))
 }

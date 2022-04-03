@@ -73,6 +73,7 @@ func (s Server) routes() chi.Router {
 	router.Route("/", func(r chi.Router) {
 	    r.Get("/*", s.getHandler)
 	    r.Post("/*", s.postHandler)
+	    r.Get("/api/v1/ping", s.Ping)
 	})
 
 	return router
@@ -140,6 +141,10 @@ func (s Server) handleRequest(typeRequest string, w http.ResponseWriter, r *http
     }
 
    fmt.Fprintf(w, "%s", response)
+}
+
+func (s Server) Ping(w http.ResponseWriter, r *http.Request) {
+     fmt.Fprintf(w, "%s", "pong")
 }
 
 func setSystemHeaders(req *http.Request) {
