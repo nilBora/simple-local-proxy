@@ -125,8 +125,12 @@ func (s Server) handleRequest(typeRequest string, w http.ResponseWriter, r *http
     }
     client := &http.Client{Transport: tr}
 
-    proxyUrl := s.TargetHost+uri+"?"+r.URL.RawQuery
+    proxyUrl := s.TargetHost+uri;
+    if len(r.URL.RawQuery) > 0 {
+        proxyUrl = proxyUrl+"?"+r.URL.RawQuery
+    }
 
+    log.Printf("[INFO] Proxy Url: %s", proxyUrl)
     req, err := http.NewRequest(typeRequest, proxyUrl, responseBody)
 
     for key, value := range r.Header {
