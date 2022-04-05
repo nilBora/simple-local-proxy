@@ -10,6 +10,8 @@ go run app/main.go --target=https://host.local/
 
 `go test -v -run Test_Main`
 
+`go test -v`
+
 ## Make commands
 ```
 make rundev https://local.host/
