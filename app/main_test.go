@@ -30,7 +30,7 @@ func TestPing(t *testing.T) {
 
 func Test_Main(t *testing.T) {
 
-    os.Args = []string{"main", "--target=http://147.182.244.37:8080/"}
+    os.Args = []string{"main", "--target=http://147.182.244.37/"}
 //
     done := make(chan struct{})
     go func() {
