@@ -8,12 +8,10 @@ import (
    "github.com/pkg/errors"
    "bytes"
    "io/ioutil"
-   //"github.com/didip/tollbooth/v6"
-   //"github.com/didip/tollbooth_chi"
    "github.com/go-chi/chi/v5"
    "github.com/go-chi/chi/v5/middleware"
    "github.com/jessevdk/go-flags"
-   //"strings"
+   "github.com/jtrw/go-rest"
 )
 
 type Server struct {
@@ -70,12 +68,11 @@ func (s Server) routes() chi.Router {
 	router := chi.NewRouter()
 
     router.Use(middleware.Logger)
-    //router.Use(Ping)
+    router.Use(rest.Ping)
 
 	router.Route("/", func(r chi.Router) {
 	    r.Get("/*", s.getHandler)
 	    r.Post("/*", s.postHandler)
-	    r.Get("/ping", Ping)
 	})
 
 	return router
@@ -137,7 +134,7 @@ func (s Server) handleRequest(typeRequest string, w http.ResponseWriter, r *http
 
     resp, err := client.Do(req)
 
-    defer resp.Body.Close()
+    //defer resp.Body.Close()
 
     if err != nil {
        log.Printf("%s",err)
