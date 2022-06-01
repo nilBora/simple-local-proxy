@@ -51,7 +51,7 @@ func Test_Main(t *testing.T) {
 //     }()
 
     port := 8081
-    host := "127.0.0.1"
+    host := "localhost"
 
     resp, err := http.Get(fmt.Sprintf("http://%s:%d/ping", host, port))
     response, _ := ioutil.ReadAll(resp.Body)
