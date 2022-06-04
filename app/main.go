@@ -11,7 +11,6 @@ import (
    "github.com/go-chi/chi/v5"
    "github.com/go-chi/chi/v5/middleware"
    "github.com/jessevdk/go-flags"
-   "github.com/jtrw/go-rest"
 )
 
 type Server struct {
@@ -64,7 +63,7 @@ func (s Server) routes() chi.Router {
 	router := chi.NewRouter()
 
     router.Use(middleware.Logger)
-    router.Use(rest.Ping)
+    //router.Use(rest.Ping)
 
 	router.Route("/", func(r chi.Router) {
 	    r.Get("/*", s.getHandler)
@@ -72,10 +71,6 @@ func (s Server) routes() chi.Router {
 	})
 
 	return router
-}
-
-func Ping(w http.ResponseWriter, r *http.Request) {
-    fmt.Fprintf(w, "pong")
 }
 
 func (s Server) getHandler(w http.ResponseWriter, r *http.Request) {
